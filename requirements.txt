@@ -1,0 +1,15 @@
+install python and pip
+
+
+Then install all the libraries below:
+- pip install Flask
+- pip install pymysql
+- pip install Flask-Mail
+- pip install Flask-Reuploaded
+- pip install PyJWT
+
+You can download MYSQL on your machine.
+setup mysql and replace the mysql host credentials inside my code.
+run the app.py file and the server will start on localhost:5000 server.
+
+
