@@ -8,8 +8,8 @@
 
 __Request__
 
-- all the request parameters are `x-www-form-urlencoded` 
-``` 
+- the request parameters are json 
+```json
 {
     "username": "johnDoe",
     "password": "testPassword",
@@ -58,8 +58,8 @@ __Response__
 
 __Request__
 
-- all the request parameters are `x-www-form-urlencoded` 
-``` 
+- the request parameters are json 
+``` json
 {
     "username": "johnDoe",
     "password": "testPassword"
@@ -69,6 +69,9 @@ __Request__
 - On success, we will receive 200
 ```
 {
+    "username": <username>,
+    "user_id": <user_id>,
+    "email": <email>,
     "message": "Logged in successfully !",
     "token": "<jwt token>"
 }

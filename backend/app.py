@@ -129,13 +129,15 @@ def get_profile_picture(username):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form and 'firstname' in request.form and 'lastname' in request.form:
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
+    firstname = data.get('firstname')
+    lastname = data.get('lastname')
+
+    if request.method == 'POST' and username and password and email and firstname and lastname:
         print('reached')
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
 
         db.execute('SELECT * FROM user WHERE username = %s OR email = %s', (username, email))
         user = db.fetchone()
@@ -221,12 +223,15 @@ def upload_profile_picture(username):
 
 # To Login Users with Username and Password
 @app.route('/')
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     msg = ''
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if request.method == 'POST' and username and password:
         db.execute('SELECT * FROM user WHERE username = %s AND password = %s', (username, password,))
         conn.commit()
         user = db.fetchone()
@@ -239,10 +244,21 @@ def login():
             }, app.config['SECRET_KEY'])
 
             msg = 'Logged in successfully !'
-            return jsonify({'token': token, 'message': msg}), 200
+
+            user_info = {
+                "username": username,
+                "user_id": user.get('id'),
+                "email": user.get('email'),
+                "token": token,
+                "msg": msg
+            }
+
+            return jsonify(user_info), 200
         else:
             msg = 'Incorrect username / password !'
             return make_response({'message': msg}, 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed"'})
+    elif request.method == 'POST':
+        return abort(400, {'message': 'Please fill out the form !'})
 
 
 @app.route('/logout', methods=['POST'])
@@ -510,7 +526,6 @@ def get_single_post(post_id):
 @app.route('/create_department', methods=['POST'])
 @token_required
 def create_department(username):
-
     db.execute('SELECT is_admin FROM user WHERE username = %s', username)
     conn.commit()
     user = db.fetchone()
@@ -552,7 +567,6 @@ def create_department(username):
 @app.route('/create_course', methods=['POST'])
 @token_required
 def create_course(username):
-
     db.execute('SELECT is_admin FROM user WHERE username = %s', username)
     conn.commit()
     user = db.fetchone()
