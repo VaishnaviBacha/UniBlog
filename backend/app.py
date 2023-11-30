@@ -248,6 +248,7 @@ def login():
             user_info = {
                 "username": username,
                 "user_id": user.get('id'),
+                "is_admin": user.get('is_admin'),
                 "email": user.get('email'),
                 "token": token,
                 "msg": msg
@@ -274,7 +275,8 @@ def logout():
 
 # Example: Route to create a new blog post
 @app.route('/create_post', methods=['POST'])
-def create_post():
+@token_required
+def create_post(username):
     data = request.get_json()
 
     user_id = data.get('user_id')
@@ -295,13 +297,43 @@ def create_post():
     return jsonify({'message': 'Blog post created successfully'}), 201
 
 
-@app.route('/get_posts', methods=['GET'])
+@app.route('/edit_post/<post_id>', methods=['PUT'])
 @token_required
-def get_posts():
-    db.execute('SELECT * FROM blog ORDER BY created_at desc ')
-    conn.commit()
-    posts = db.fetchall()
+def edit_post(username, post_id):
+    data = request.get_json()
 
+    user_id = data.get('user_id')
+    department_id = data.get('department_id')
+    course_id = data.get('course_id')
+    title = data.get('title')
+    content = data.get('content')
+
+    if not user_id or not department_id or not course_id or not title or not content:
+        return jsonify({'message': 'All fields are required'}), 400
+
+    try:
+        with conn.cursor() as cursor:
+            # Check if the blog post with the given ID exists
+            cursor.execute('SELECT * FROM blog WHERE id = %s', (post_id,))
+            existing_post = cursor.fetchone()
+
+            if not existing_post:
+                return jsonify({'message': 'Blog post not found'}), 404
+
+            # Update the blog post
+            cursor.execute(
+                'UPDATE blog SET user_id = %s, department_id = %s, course_id = %s, title = %s, content = %s WHERE id = %s',
+                (user_id, department_id, course_id, title, content, post_id))
+
+            conn.commit()
+
+            return single_post_response(post_id)
+
+    except Exception as e:
+        return jsonify({'message': f'Error updating blog post: {str(e)}'}), 500
+
+
+def posts_response(posts):
     post_list = []
 
     for post in posts:
@@ -313,11 +345,11 @@ def get_posts():
         conn.commit()
         comments = db.fetchall()
 
-        db.execute('SELECT department_name FROM department WHERE id=%s', post['department_id'])
+        db.execute('SELECT id, department_name FROM department WHERE id=%s', post['department_id'])
         conn.commit()
         department = db.fetchone()
 
-        db.execute('SELECT course_name FROM course WHERE id=%s', post['course_id'])
+        db.execute('SELECT id, course_name FROM course WHERE id=%s', post['course_id'])
         conn.commit()
         course = db.fetchone()
 
@@ -329,8 +361,8 @@ def get_posts():
             'id': post['id'],
             'title': post['title'],
             'content': post['content'],
-            'department_name': department['department_name'],
-            'course_name': course['course_name'],
+            'department': {'id': department['id'], 'department_name': department['department_name']},
+            'course': {'id': course['id'], 'course_name': course['course_name']},
             'likes': [{'user_id': like['user_id']} for like in likes],
             'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
             'created_at': post['created_at'],
@@ -340,6 +372,17 @@ def get_posts():
 
         post_list.append(post_info)
 
+    return post_list
+
+
+@app.route('/get_posts', methods=['GET'])
+@token_required
+def get_posts(username):
+    db.execute('SELECT * FROM blog ORDER BY created_at desc ')
+    conn.commit()
+    posts = db.fetchall()
+
+    post_list = posts_response(posts)
     return jsonify({'posts': post_list}), 200
 
 
@@ -350,44 +393,7 @@ def get_posts_by_department(username, department_id):
     conn.commit()
     posts = db.fetchall()
 
-    post_list = []
-
-    for post in posts:
-        db.execute('SELECT user_id FROM likes WHERE blog_id = %s', post['id'])
-        conn.commit()
-        likes = db.fetchall()
-
-        db.execute('SELECT * FROM comment WHERE blog_id = %s', post['id'])
-        conn.commit()
-        comments = db.fetchall()
-
-        db.execute('SELECT department_name FROM department WHERE id=%s', post['department_id'])
-        conn.commit()
-        department = db.fetchone()
-
-        db.execute('SELECT course_name FROM course WHERE id=%s', post['course_id'])
-        conn.commit()
-        course = db.fetchone()
-
-        db.execute('SELECT username FROM user WHERE id=%s', post['user_id'])
-        conn.commit()
-        user = db.fetchone()
-
-        post_info = {
-            'id': post['id'],
-            'title': post['title'],
-            'content': post['content'],
-            'department_name': department['department_name'],
-            'course_name': course['course_name'],
-            'likes': [{'user_id': like['user_id']} for like in likes],
-            'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
-            'created_at': post['created_at'],
-            'user_id': post['user_id'],
-            'username': user['username']
-        }
-
-        post_list.append(post_info)
-
+    post_list = posts_response(posts)
     return jsonify({'posts': post_list}), 200
 
 
@@ -399,44 +405,7 @@ def get_posts_by_course(username, department_id, course_id):
     conn.commit()
     posts = db.fetchall()
 
-    post_list = []
-
-    for post in posts:
-        db.execute('SELECT user_id FROM likes WHERE blog_id = %s', post['id'])
-        conn.commit()
-        likes = db.fetchall()
-
-        db.execute('SELECT * FROM comment WHERE blog_id = %s', post['id'])
-        conn.commit()
-        comments = db.fetchall()
-
-        db.execute('SELECT department_name FROM department WHERE id=%s', post['department_id'])
-        conn.commit()
-        department = db.fetchone()
-
-        db.execute('SELECT course_name FROM course WHERE id=%s', post['course_id'])
-        conn.commit()
-        course = db.fetchone()
-
-        db.execute('SELECT username FROM user WHERE id=%s', post['user_id'])
-        conn.commit()
-        user = db.fetchone()
-
-        post_info = {
-            'id': post['id'],
-            'title': post['title'],
-            'content': post['content'],
-            'department_name': department['department_name'],
-            'course_name': course['course_name'],
-            'likes': [{'user_id': like['user_id']} for like in likes],
-            'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
-            'created_at': post['created_at'],
-            'user_id': post['user_id'],
-            'username': user['username']
-        }
-
-        post_list.append(post_info)
-
+    post_list = posts_response(posts)
     return jsonify({'posts': post_list}), 200
 
 
@@ -449,45 +418,17 @@ def get_my_blogs(username):
     conn.commit()
     posts = db.fetchall()
 
-    post_list = []
-
-    for post in posts:
-        db.execute('SELECT user_id FROM likes WHERE blog_id = %s', post['id'])
-        conn.commit()
-        likes = db.fetchall()
-
-        db.execute('SELECT * FROM comment WHERE blog_id = %s', post['id'])
-        conn.commit()
-        comments = db.fetchall()
-
-        db.execute('SELECT department_name FROM department WHERE id=%s', post['department_id'])
-        conn.commit()
-        department = db.fetchone()
-
-        db.execute('SELECT course_name FROM course WHERE id=%s', post['course_id'])
-        conn.commit()
-        course = db.fetchone()
-
-        post_info = {
-            'id': post['id'],
-            'title': post['title'],
-            'content': post['content'],
-            'department_name': department['department_name'],
-            'course_name': course['course_name'],
-            'likes': [{'user_id': like['user_id']} for like in likes],
-            'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
-            'created_at': post['created_at'],
-            'user_id': post['user_id'],
-            'username': username
-        }
-
-        post_list.append(post_info)
-
+    post_list = posts_response(posts)
     return jsonify({'posts': post_list}), 200
 
 
 @app.route('/get_single_post/<post_id>', methods=['GET'])
-def get_single_post(post_id):
+@token_required
+def get_single_post(username, post_id):
+    return single_post_response(post_id)
+
+
+def single_post_response(post_id):
     db.execute('SELECT * FROM blog WHERE id=%s', post_id)
     conn.commit()
     post = db.fetchone()
@@ -500,26 +441,30 @@ def get_single_post(post_id):
     conn.commit()
     comments = db.fetchall()
 
-    db.execute('SELECT department_name FROM department WHERE blog_id=%s', post['id'])
+    db.execute('SELECT id, department_name FROM department WHERE id=%s', post['department_id'])
     conn.commit()
     department = db.fetchone()
 
-    db.execute('SELECT course_name FROM course WHERE blog_id=%s', post['id'])
+    db.execute('SELECT id, course_name FROM course WHERE id=%s', post['course_id'])
     conn.commit()
     course = db.fetchone()
+
+    db.execute('SELECT username FROM user WHERE id=%s', post['user_id'])
+    conn.commit()
+    user = db.fetchone()
 
     post_info = {
         'id': post['id'],
         'title': post['title'],
         'content': post['content'],
-        'department_name': department['department_name'],
-        'course_name': course['course_name'],
+        'department': {'id': department['id'], 'department_name': department['department_name']},
+        'course': {'id': course['id'], 'course_name': course['course_name']},
         'likes': [{'user_id': like['user_id']} for like in likes],
         'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
         'created_at': post['created_at'],
-        'user_id': post['user_id']
+        'user_id': post['user_id'],
+        'username': user['username']
     }
-
     return jsonify({'post': post_info}), 200
 
 
@@ -614,7 +559,8 @@ def create_course(username):
 
 # Example: Route to get all departments and their courses
 @app.route('/get_departments', methods=['GET'])
-def get_departments():
+@token_required
+def get_departments(username):
     db.execute('SELECT * FROM department')
     conn.commit()
     departments = db.fetchall()
@@ -635,8 +581,26 @@ def get_departments():
     return jsonify({'departments': departments_list}), 200
 
 
+@app.route('/search', methods=['GET'])
+@token_required
+def get_search_by_title(username):
+    data = request.get_json()
+
+    title = data.get('search_query').strip().lower()
+    if title:
+
+        args = ['%'+title+'%']
+        db.execute('SELECT * FROM blog WHERE title like %s', args)
+        conn.commit()
+        posts = db.fetchall()
+
+        post_list = posts_response(posts)
+        return jsonify({'posts': post_list}), 200
+
+
 @app.route('/get_single_department/<department_id>', methods=['GET'])
-def get_single_department(department_id):
+@token_required
+def get_single_department(username, department_id):
     db.execute('SELECT * FROM department where id=%s', department_id)
     conn.commit()
     department = db.fetchone()
@@ -652,6 +616,69 @@ def get_single_department(department_id):
     }
 
     return jsonify({'department': department_info}), 200
+
+
+@app.route('/like_post/<post_id>', methods=['POST'])
+@token_required
+def like_post(username, post_id):
+    db.execute('SELECT id FROM user WHERE username=%s', username)
+    conn.commit()
+    user = db.fetchone()
+
+    try:
+        with conn.cursor() as cursor:
+            # Check if the blog post with the given ID exists
+            cursor.execute('SELECT * FROM blog WHERE id = %s', (post_id,))
+            existing_post = cursor.fetchone()
+
+            if not existing_post:
+                return jsonify({'message': 'Blog post not found'}), 404
+
+            # Check if the user has already liked the blog post
+            cursor.execute('SELECT * FROM likes WHERE user_id = %s AND blog_id = %s', (user.get('id'), post_id))
+            existing_like = cursor.fetchone()
+
+            if existing_like:
+                # If found like delete the like
+                cursor.execute('DELETE FROM likes WHERE user_id = %s AND blog_id = %s', (user.get('id'), post_id))
+                return jsonify({'message': 'Like deleted successfully'}), 200
+            else:
+                # Like the blog post
+                cursor.execute('INSERT INTO likes (user_id, blog_id) VALUES (%s, %s)', (user.get('id'), post_id))
+
+        conn.commit()
+        return jsonify({'message': 'Blog post liked successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': f'Error liking blog post: {str(e)}'}), 500
+
+
+@app.route('/add_comment/<post_id>', methods=['POST'])
+@token_required
+def add_comment(username, post_id):
+    data = request.get_json()
+    text = data.get('text')
+
+    db.execute('SELECT id FROM user WHERE username=%s', username)
+    conn.commit()
+    user = db.fetchone()
+
+    try:
+        with conn.cursor() as cursor:
+            # Check if the blog post with the given ID exists
+            cursor.execute('SELECT * FROM blog WHERE id = %s', (post_id,))
+            existing_post = cursor.fetchone()
+
+            if not existing_post:
+                return jsonify({'message': 'Blog post not found'}), 404
+
+            # Add the comment to the comments table
+            cursor.execute('INSERT INTO comment (user_id, blog_id, comment_text) VALUES (%s, %s, %s)',
+                           (user.get('id'), post_id, text))
+
+        conn.commit()
+        return jsonify({'message': 'Comment added successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': f'Error adding comment: {str(e)}'}), 500
 
 
 if __name__ == "__main__":

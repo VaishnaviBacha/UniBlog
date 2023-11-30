@@ -374,51 +374,109 @@ __Response__
     "posts": [
         {
             "comments": [],
-            "content": "One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
-            "course_name": "Computer Architecture",
-            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
-            "department_name": "Computer Engineering",
-            "id": 4,
+            "content": "Testing this blog",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Thu, 30 Nov 2023 04:00:20 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 5,
             "likes": [],
-            "title": "Recent research in Computer Architecture",
+            "title": "Test Blog",
+            "user_id": 13,
+            "username": "JohnTest"
+        },
+        {
+            "comments": [
+                {
+                    "text": "Interesting Article",
+                    "user_id": 13
+                },
+                {
+                    "text": "Interesting Article",
+                    "user_id": 12
+                }
+            ],
+            "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 4,
+            "likes": [
+                {
+                    "user_id": 13
+                },
+                {
+                    "user_id": 12
+                }
+            ],
+            "title": "recent research in Computer Architecture",
             "user_id": 13,
             "username": "JohnTest"
         },
         {
             "comments": [],
             "content": "Computer architecture refers to the design and organization of a computer system, encompassing its hardware components and their interrelationships. It defines the system's structure, functionality, and the way in which the hardware components interact to execute instructions and handle data. Key elements of computer architecture include the central processing unit (CPU), memory hierarchy, input/output systems, and interconnection networks. Computer architects design these components to optimize performance, power efficiency, and overall system reliability. They also consider factors like instruction set architecture, addressing modes, and data representation. Computer architecture is fundamental to understanding how computers operate at a low level and is crucial for both hardware designers and software developers in creating efficient and effective computing systems.",
-            "course_name": "Computer Architecture",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
             "created_at": "Mon, 27 Nov 2023 22:13:32 GMT",
-            "department_name": "Computer Engineering",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
             "id": 3,
             "likes": [],
             "title": "What is Computer Architecture?",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         },
         {
             "comments": [],
             "content": "Writing a project report is a structured process that requires clarity, precision, and a systematic approach. Start by outlining the report, including sections such as an introduction, literature review, methodology, findings, discussion, and conclusion. Clearly define the project's objectives, scope, and significance in the introduction. The literature review should provide a comprehensive overview of existing research related to your project. Detail your research methods in the methodology section, explaining your approach, data collection, and analysis techniques. Present your findings objectively, using tables, charts, or graphs to enhance clarity. In the discussion, interpret your results and relate them to your project's objectives. End with a conclusion that summarizes key findings and their implications. Ensure your report is well-organized, free of grammatical errors, and follows the prescribed format and citation style. Including an executive summary at the beginning can provide a quick overview for readers. Regularly revise and edit your report for coherence and accuracy. Following these steps will help you create a comprehensive and well-presented project report.",
-            "course_name": "CPSC589 Final Project",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:53:08 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 2,
             "likes": [],
             "title": "How to write project report",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         },
         {
             "comments": [],
-            "content": "Choosing a compelling and relevant topic for your project is crucial, as it sets the tone for your academic exploration and contributes to your learning experience. Consider topics that align with your interests, career goals, and the latest trends in your field of study. Whether it's in computer science, engineering, social sciences, or any other discipline, aim for a project that challenges you intellectually and allows you to apply the knowledge and skills you've acquired throughout your academic journey. Look for areas with gaps in research or emerging technologies that spark your curiosity. Collaborating with industry partners or addressing real-world problems can also add practical value to your project. Ultimately, selecting a final year project topic that excites you and has the potential for meaningful contributions will not only enhance your academic portfolio but also make the journey towards graduation more rewarding.",
-            "course_name": "Project",
+            "content": "Choosing a compelling and relevant topic for your final year project is crucial, as it sets the tone for your academic exploration and contributes to your learning experience. Consider topics that align with your interests, career goals, and the latest trends in your field of study. Whether it's in computer science, engineering, social sciences, or any other discipline, aim for a project that challenges you intellectually and allows you to apply the knowledge and skills you've acquired throughout your academic journey. Look for areas with gaps in research or emerging technologies that spark your curiosity. Collaborating with industry partners or addressing real-world problems can also add practical value to your project. Ultimately, selecting a final year project topic that excites you and has the potential for meaningful contributions will not only enhance your academic portfolio but also make the journey towards graduation more rewarding.",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:47:21 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 1,
             "likes": [],
-            "title": "Topics for project",
+            "title": "Topics for final year project",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         }
     ]
 }
@@ -443,26 +501,38 @@ __Response__
         {
             "comments": [],
             "content": "Writing a project report is a structured process that requires clarity, precision, and a systematic approach. Start by outlining the report, including sections such as an introduction, literature review, methodology, findings, discussion, and conclusion. Clearly define the project's objectives, scope, and significance in the introduction. The literature review should provide a comprehensive overview of existing research related to your project. Detail your research methods in the methodology section, explaining your approach, data collection, and analysis techniques. Present your findings objectively, using tables, charts, or graphs to enhance clarity. In the discussion, interpret your results and relate them to your project's objectives. End with a conclusion that summarizes key findings and their implications. Ensure your report is well-organized, free of grammatical errors, and follows the prescribed format and citation style. Including an executive summary at the beginning can provide a quick overview for readers. Regularly revise and edit your report for coherence and accuracy. Following these steps will help you create a comprehensive and well-presented project report.",
-            "course_name": "Project",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:53:08 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 2,
             "likes": [],
             "title": "How to write project report",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         },
         {
             "comments": [],
-            "content": "Choosing a compelling and relevant topic for your project is crucial, as it sets the tone for your academic exploration and contributes to your learning experience. Consider topics that align with your interests, career goals, and the latest trends in your field of study. Whether it's in computer science, engineering, social sciences, or any other discipline, aim for a project that challenges you intellectually and allows you to apply the knowledge and skills you've acquired throughout your academic journey. Look for areas with gaps in research or emerging technologies that spark your curiosity. Collaborating with industry partners or addressing real-world problems can also add practical value to your project. Ultimately, selecting a final year project topic that excites you and has the potential for meaningful contributions will not only enhance your academic portfolio but also make the journey towards graduation more rewarding.",
-            "course_name": "Project",
+            "content": "Choosing a compelling and relevant topic for your final year project is crucial, as it sets the tone for your academic exploration and contributes to your learning experience. Consider topics that align with your interests, career goals, and the latest trends in your field of study. Whether it's in computer science, engineering, social sciences, or any other discipline, aim for a project that challenges you intellectually and allows you to apply the knowledge and skills you've acquired throughout your academic journey. Look for areas with gaps in research or emerging technologies that spark your curiosity. Collaborating with industry partners or addressing real-world problems can also add practical value to your project. Ultimately, selecting a final year project topic that excites you and has the potential for meaningful contributions will not only enhance your academic portfolio but also make the journey towards graduation more rewarding.",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:47:21 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 1,
             "likes": [],
             "title": "Topics for final year project",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         }
     ]
 }
@@ -488,26 +558,38 @@ __Response__
         {
             "comments": [],
             "content": "Writing a project report is a structured process that requires clarity, precision, and a systematic approach. Start by outlining the report, including sections such as an introduction, literature review, methodology, findings, discussion, and conclusion. Clearly define the project's objectives, scope, and significance in the introduction. The literature review should provide a comprehensive overview of existing research related to your project. Detail your research methods in the methodology section, explaining your approach, data collection, and analysis techniques. Present your findings objectively, using tables, charts, or graphs to enhance clarity. In the discussion, interpret your results and relate them to your project's objectives. End with a conclusion that summarizes key findings and their implications. Ensure your report is well-organized, free of grammatical errors, and follows the prescribed format and citation style. Including an executive summary at the beginning can provide a quick overview for readers. Regularly revise and edit your report for coherence and accuracy. Following these steps will help you create a comprehensive and well-presented project report.",
-            "course_name": "Project",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:53:08 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 2,
             "likes": [],
             "title": "How to write project report",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         },
         {
             "comments": [],
             "content": "Choosing a compelling and relevant topic for your final year project is crucial, as it sets the tone for your academic exploration and contributes to your learning experience. Consider topics that align with your interests, career goals, and the latest trends in your field of study. Whether it's in computer science, engineering, social sciences, or any other discipline, aim for a project that challenges you intellectually and allows you to apply the knowledge and skills you've acquired throughout your academic journey. Look for areas with gaps in research or emerging technologies that spark your curiosity. Collaborating with industry partners or addressing real-world problems can also add practical value to your project. Ultimately, selecting a final year project topic that excites you and has the potential for meaningful contributions will not only enhance your academic portfolio but also make the journey towards graduation more rewarding.",
-            "course_name": "Project",
+            "course": {
+                "course_name": "CPSC589 Final Project",
+                "id": 1
+            },
             "created_at": "Mon, 27 Nov 2023 21:47:21 GMT",
-            "department_name": "Computer Science",
+            "department": {
+                "department_name": "Computer Science",
+                "id": 1
+            },
             "id": 1,
             "likes": [],
-            "title": "Topics for project",
+            "title": "Topics for final year project",
             "user_id": 12,
-            "username": "VBTest"
+            "username": "VaishnaviTest"
         }
     ]
 }
@@ -532,16 +614,303 @@ __Response__
     "posts": [
         {
             "comments": [],
-            "content": "One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
-            "course_name": "Computer Architecture",
-            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
-            "department_name": "Computer Engineering",
-            "id": 4,
+            "content": "Testing this blog",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Thu, 30 Nov 2023 04:00:20 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 5,
             "likes": [],
-            "title": "Recent research in Computer Architecture",
+            "title": "Test Blog",
+            "user_id": 13,
+            "username": "JohnTest"
+        },
+        {
+            "comments": [
+                {
+                    "text": "Interesting Article",
+                    "user_id": 13
+                },
+                {
+                    "text": "Interesting Article",
+                    "user_id": 12
+                }
+            ],
+            "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 4,
+            "likes": [
+                {
+                    "user_id": 13
+                },
+                {
+                    "user_id": 12
+                }
+            ],
+            "title": "recent research in Computer Architecture",
             "user_id": 13,
             "username": "JohnTest"
         }
     ]
 }
 ```
+
+
+### 16 `GET /get_single_post/<post_id>`
+
+- Returns the posts based on the user found in the jwt token
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__Response__ 
+
+```json
+{
+    "post": {
+        "comments": [
+            {
+                "text": "Interesting Article",
+                "user_id": 13
+            },
+            {
+                "text": "Interesting Article",
+                "user_id": 12
+            }
+        ],
+        "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+        "course": {
+            "course_name": "CPSC489 Computer Architecture",
+            "id": 2
+        },
+        "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+        "department": {
+            "department_name": "Computer Engineering",
+            "id": 3
+        },
+        "id": 4,
+        "likes": [
+            {
+                "user_id": 13
+            },
+            {
+                "user_id": 12
+            }
+        ],
+        "title": "recent research in Computer Architecture",
+        "user_id": 13,
+        "username": "JohnTest"
+    }
+}
+```
+
+### 16. `PUT /edit_post/<post_id>`
+
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__RequestBody__
+
+```json
+{
+            "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+            "course_id": "2",
+            "department_id": "3",
+            "title": "recent research in Computer Architecture",
+            "user_id": 13
+
+}
+```
+
+__ResponseBody__
+
+- On Success, we will get 200.
+```json
+{
+    "post": {
+        "comments": [
+            {
+                "text": "Interesting Article",
+                "user_id": 13
+            },
+            {
+                "text": "Interesting Article",
+                "user_id": 12
+            }
+        ],
+        "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+        "course": {
+            "course_name": "CPSC489 Computer Architecture",
+            "id": 2
+        },
+        "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+        "department": {
+            "department_name": "Computer Engineering",
+            "id": 3
+        },
+        "id": 4,
+        "likes": [
+            {
+                "user_id": 13
+            },
+            {
+                "user_id": 12
+            }
+        ],
+        "title": "recent research in Computer Architecture",
+        "user_id": 13,
+        "username": "JohnTest"
+    }
+}
+```
+
+### 17. `POST /like_post/<post_id>`
+- This will like the given post
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__Response__
+- On success, we will get 201
+
+```json
+{
+    "message": "Blog post liked successfully"
+}
+```
+
+### 18. `POST /like_post/<post_id>`
+
+- the same API will unlike if its already been liked by user
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__Response__
+- On success, we will get 200
+
+```json
+{
+    "message": "Like deleted successfully"
+}
+```
+
+### 19. `POST /add_comment/<post_id>`
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__RequestBody__
+
+```json
+{
+  "text": "<comment_text>"
+}
+```
+
+__Response__
+- On Success, we will get 201
+```json
+{
+    "message": "Comment added successfully"
+}
+```
+
+
+### 20. `GET /search/`
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__RequestBody__
+
+```json
+{
+    "search_query": "computer architecture"
+}
+```
+
+__Response__
+- On Success, we will get 200
+- It will return array of posts.
+```json
+{
+    "posts": [
+        {
+            "comments": [],
+            "content": "Computer architecture refers to the design and organization of a computer system, encompassing its hardware components and their interrelationships. It defines the system's structure, functionality, and the way in which the hardware components interact to execute instructions and handle data. Key elements of computer architecture include the central processing unit (CPU), memory hierarchy, input/output systems, and interconnection networks. Computer architects design these components to optimize performance, power efficiency, and overall system reliability. They also consider factors like instruction set architecture, addressing modes, and data representation. Computer architecture is fundamental to understanding how computers operate at a low level and is crucial for both hardware designers and software developers in creating efficient and effective computing systems.",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Mon, 27 Nov 2023 22:13:32 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 3,
+            "likes": [],
+            "title": "What is Computer Architecture?",
+            "user_id": 12,
+            "username": "VaishnaviTest"
+        },
+        {
+            "comments": [],
+            "content": "***One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 4,
+            "likes": [],
+            "title": "recent research in Computer Architecture",
+            "user_id": 13,
+            "username": "JohnTest"
+        }
+    ]
+}
+```
+
+
