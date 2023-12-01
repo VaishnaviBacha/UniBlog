@@ -170,24 +170,32 @@ def register():
         return abort(400, {'message': 'Please fill out the form !'})
 
 
-@app.route('/verify_email/<email>/<token>', methods=['GET'])
-def verify_email(email, token):
-    db.execute('SELECT * FROM user WHERE verification_token = %s and email = %s', (token, email))
-    user = db.fetchone()
-    print(user)
-    conn.commit()
+@app.route('/verify_email', methods=['GET'])
+def verify_email():
+    data = request.get_json()
 
-    if not user:
-        return abort(400, {'message': 'Invalid Verification email or Code'})
+    email = data.get('email')
+    token = data.get('token')
 
-    if not user['email_verified']:
-        db.execute('UPDATE user SET email_verified = %s where username = %s', (True, user['username']))
+    if email and token:
+        db.execute('SELECT * FROM user WHERE verification_token = %s and email = %s', (token, email))
+        user = db.fetchone()
+        print(user)
         conn.commit()
-        flash('Your email has been successfully verified!', 'success')
-    else:
-        flash('Your email is already verified.', 'info')
 
-    return jsonify({'message': 'Your email is verified.'}), 200
+        if not user:
+            return abort(400, {'message': 'Invalid Verification email or Code'})
+
+        if not user['email_verified']:
+            db.execute('UPDATE user SET email_verified = %s where username = %s', (True, user['username']))
+            conn.commit()
+            flash('Your email has been successfully verified!', 'success')
+        else:
+            flash('Your email is already verified.', 'info')
+
+        return jsonify({'message': 'Your email is verified.'}), 200
+    else:
+        return jsonify({'message': 'Missing email or token'}), 400
 
 
 @app.route('/upload_profile_picture', methods=['POST'])
@@ -253,8 +261,9 @@ def login():
                 "token": token,
                 "msg": msg
             }
-
-            return jsonify(user_info), 200
+            response = make_response(jsonify(user_info), 200)
+            response.set_cookie('jwt', token, samesite='Strict')  # This solved Cookie samesite error on frontend
+            return response
         else:
             msg = 'Incorrect username / password !'
             return make_response({'message': msg}, 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed"'})
@@ -588,8 +597,7 @@ def get_search_by_title(username):
 
     title = data.get('search_query').strip().lower()
     if title:
-
-        args = ['%'+title+'%']
+        args = ['%' + title + '%']
         db.execute('SELECT * FROM blog WHERE title like %s', args)
         conn.commit()
         posts = db.fetchall()

@@ -34,9 +34,18 @@ __Response__
 2. Invalid email address.(including non college email id)
 3. username contains special characters
 
-### 2. `GET /verify_email/<email>/<token>`
+### 2. `GET /verify_email`
 
 - Get the OTP from the email and use it here along with the emailID you entered to register
+
+__RequestBody__
+
+```json
+{
+  "email": "<email_id>",
+  "token": <OTP>
+}
+```
 
 __Response__
 
@@ -66,6 +75,7 @@ __Request__
 }
 ```
 
+__ResponseBody__
 - On success, we will receive 200
 ```
 {
@@ -74,6 +84,13 @@ __Request__
     "email": <email>,
     "message": "Logged in successfully !",
     "token": "<jwt token>"
+}
+```
+
+__ResponseHeader__
+```json
+{
+  "Cookie": "jwt=<jwt_token>"
 }
 ```
 
