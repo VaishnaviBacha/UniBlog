@@ -58,6 +58,11 @@ def token_required(func):
             data = request.headers["Authorization"]
             token = str.replace(str(data), "Bearer ", "")  # Extracting token
         if not token:
+            if "Cookie" in request.headers:
+                data = request.headers["Cookie"]
+                token = str.replace(data.split(";")[0], "jwt=", "")  # Extracting token
+
+        if not token:
             return make_response(jsonify({'Alert!': 'token is missing', 'statusCode': 401}),
                                  401)  # HTTP Status code 401 unauthorized
 
