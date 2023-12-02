@@ -356,7 +356,6 @@ __RequestBody__
 
 ```json
 {
-    "user_id": 1,
     "department_id": 1,
     "course_id": 1,
     "title": "Recent research in Computer Architecture",

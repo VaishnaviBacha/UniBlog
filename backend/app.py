@@ -296,18 +296,21 @@ def logout():
 def create_post(username):
     data = request.get_json()
 
-    user_id = data.get('user_id')
     department_id = data.get('department_id')
     course_id = data.get('course_id')
     title = data.get('title')
     content = data.get('content')
 
-    if not user_id or not department_id or not course_id or not title or not content:
+    if not department_id or not course_id or not title or not content:
         return jsonify({'message': 'All fields are required'}), 400
+
+    db.execute('SELECT * FROM user WHERE username = %s', (username,))
+    user = db.fetchone()
+    conn.commit()
 
     db.execute(
         'INSERT INTO blog (user_id, department_id, course_id, title, content) VALUES (%s, %s, %s, %s, %s)',
-        (user_id, department_id, course_id, title, content))
+        (user.get('id'), department_id, course_id, title, content))
 
     conn.commit()
 
