@@ -322,13 +322,12 @@ def create_post(username):
 def edit_post(username, post_id):
     data = request.get_json()
 
-    user_id = data.get('user_id')
     department_id = data.get('department_id')
     course_id = data.get('course_id')
     title = data.get('title')
     content = data.get('content')
 
-    if not user_id or not department_id or not course_id or not title or not content:
+    if not department_id or not course_id or not title or not content:
         return jsonify({'message': 'All fields are required'}), 400
 
     try:
@@ -340,10 +339,17 @@ def edit_post(username, post_id):
             if not existing_post:
                 return jsonify({'message': 'Blog post not found'}), 404
 
+            db.execute('SELECT * FROM user WHERE username = %s', (username,))
+            user = db.fetchone()
+            conn.commit()
+
+            if existing_post.get('user_id') != user.get('id'):
+                return jsonify({'message': 'You can not edit the posts'}), 400
+
             # Update the blog post
             cursor.execute(
                 'UPDATE blog SET user_id = %s, department_id = %s, course_id = %s, title = %s, content = %s WHERE id = %s',
-                (user_id, department_id, course_id, title, content, post_id))
+                (user.get('id'), department_id, course_id, title, content, post_id))
 
             conn.commit()
 
