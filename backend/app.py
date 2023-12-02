@@ -3,6 +3,7 @@ from flask_mail import Mail, Message
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from datetime import datetime, timedelta
 from functools import wraps
+from flask_cors import CORS
 import pymysql
 import re
 import random
@@ -10,6 +11,8 @@ import os
 import jwt
 
 app = Flask(__name__)
+
+CORS(app, supports_credentials=True)
 
 # Mail Settings
 app.config.update(dict(
@@ -267,7 +270,7 @@ def login():
                 "msg": msg
             }
             response = make_response(jsonify(user_info), 200)
-            response.set_cookie('jwt', token, samesite='Strict')  # This solved Cookie samesite error on frontend
+            response.set_cookie('jwt', token, samesite='None', secure=True)  # This solved Cookie samesite error on frontend
             return response
         else:
             msg = 'Incorrect username / password !'
