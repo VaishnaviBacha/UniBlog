@@ -498,9 +498,9 @@ __Response__
 }
 ```
 
-### 13. `GET /get_posts_by_department/<department_id>`
+### 13. `GET /get_posts_by_department/<department_name>`
 
-- Returns the posts based on department_id with latest date added.
+- Returns the posts based on department_name with latest date added.
 
 __RequestHeader__
 ```
@@ -555,9 +555,9 @@ __Response__
 ```
 
 
-### 14. `GET /get_posts_by_course/<department_id>/<course_id>`
+### 14. `GET /get_posts_by_course/<department_name>/<course_name>`
 
-- Returns the posts based on department_id and course_id with latest date added.
+- Returns the posts based on department_name and course_name with latest date added.
 
 __RequestHeader__
 ```

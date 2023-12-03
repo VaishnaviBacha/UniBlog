@@ -178,7 +178,7 @@ def register():
         return abort(400, {'message': 'Please fill out the form !'})
 
 
-@app.route('/verify_email', methods=['GET'])
+@app.route('/verify_email', methods=['GET', 'POST'])
 def verify_email():
     data = request.get_json()
 
@@ -412,10 +412,10 @@ def get_posts(username):
     return jsonify({'posts': post_list}), 200
 
 
-@app.route('/get_posts_by_department/<department_id>', methods=['GET'])
+@app.route('/get_posts_by_department/<department_name>', methods=['GET'])
 @token_required
-def get_posts_by_department(username, department_id):
-    db.execute('SELECT * FROM blog WHERE department_id = %s ORDER BY created_at desc ', department_id)
+def get_posts_by_department(username, department_name):
+    db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ', department_name.strip())
     conn.commit()
     posts = db.fetchall()
 
@@ -423,11 +423,12 @@ def get_posts_by_department(username, department_id):
     return jsonify({'posts': post_list}), 200
 
 
-@app.route('/get_posts_by_course/<department_id>/<course_id>', methods=['GET'])
+@app.route('/get_posts_by_course/<department_name>/<course_name>', methods=['GET'])
 @token_required
-def get_posts_by_course(username, department_id, course_id):
-    db.execute('SELECT * FROM blog WHERE department_id = %s AND course_id = %s ORDER BY created_at desc ',
-               (department_id, course_id))
+def get_posts_by_course(username, department_name, course_name):
+    db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s)'
+               ' AND course_id IN (SELECT id FROM course WHERE course_name like %s) ORDER BY created_at desc ',
+               (department_name.strip(), course_name.strip()))
     conn.commit()
     posts = db.fetchall()
 
