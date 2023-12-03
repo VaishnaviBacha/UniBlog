@@ -866,7 +866,9 @@ __Response__
 ```
 
 
-### 20. `GET /search/`
+### 20. `GET /search/<search_queey>`
+
+- Search the post by search query
 
 __RequestHeader__
 ```
@@ -875,13 +877,6 @@ __RequestHeader__
 }
 ```
 
-__RequestBody__
-
-```json
-{
-    "search_query": "computer architecture"
-}
-```
 
 __Response__
 - On Success, we will get 200

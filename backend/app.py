@@ -608,13 +608,12 @@ def get_departments(username):
     return jsonify({'departments': departments_list}), 200
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search/<search_query>', methods=['GET'])
 @token_required
-def get_search_by_title(username):
-    data = request.get_json()
+def get_search_by_title(username, search_query):
 
-    title = data.get('search_query').strip().lower()
-    if title:
+    if search_query:
+        title = search_query.strip()
         args = ['%' + title + '%']
         db.execute('SELECT * FROM blog WHERE title like %s', args)
         conn.commit()
