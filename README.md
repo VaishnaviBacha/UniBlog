@@ -925,3 +925,84 @@ __Response__
 ```
 
 
+### 21. `POST /save_post/<blog_id>`
+
+- Saves the post for reading later
+- It takes Blog Id as input as url parameter to the API
+
+
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__Response__
+
+- On Success, it will return 201.
+
+```json
+{
+    "message": "Blog added to reading list successfully"
+}
+```
+
+- Following errors are handled:
+- User and Blog should exist otherwise it throws 404.
+
+
+### 22. `GET /reading_list`
+
+- Return saved blogs for the user.
+
+__RequestHeader__
+```
+{
+"Authorization": "Bearer <jwtToken>"
+}
+```
+
+__Response__
+
+```json
+{
+    "saved_blogs": [
+        {
+            "comments": [
+                {
+                    "text": "Interesting Article",
+                    "user_id": 13
+                },
+                {
+                    "text": "Interesting Article",
+                    "user_id": 12
+                }
+            ],
+            "content": "One significant trend is the exploration of novel architectures to enhance performance and energy efficiency. Researchers are investigating the potential of emerging technologies, such as quantum computing and neuromorphic computing, to revolutionize traditional architectures. Moreover, there is a continued emphasis on designing architectures that can effectively handle the increasing demand for specialized workloads, including artificial intelligence and machine learning tasks. Additionally, there is ongoing research in the development of secure and resilient architectures to address the growing concerns regarding cybersecurity in modern computing systems. For the latest and more detailed information, I recommend checking recent conference proceedings, journals, or the websites of leading institutions conducting research in computer architecture.",
+            "course": {
+                "course_name": "CPSC489 Computer Architecture",
+                "id": 2
+            },
+            "created_at": "Mon, 27 Nov 2023 22:56:37 GMT",
+            "department": {
+                "department_name": "Computer Engineering",
+                "id": 3
+            },
+            "id": 4,
+            "likes": [
+                {
+                    "user_id": 13
+                },
+                {
+                    "user_id": 12
+                }
+            ],
+            "title": "recent research in Computer Architecture",
+            "user_id": 13,
+            "username": "JohnTest"
+        }
+    ]
+}
+```

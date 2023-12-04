@@ -712,5 +712,52 @@ def add_comment(username, post_id):
         return jsonify({'message': f'Error adding comment: {str(e)}'}), 500
 
 
+@app.route('/save_post/<blog_id>', methods=['POST'])
+@token_required
+def add_to_reading_list(username, blog_id):
+    try:
+        # Check if the user and blog exist before adding to the reading list
+        db.execute('SELECT * FROM blog WHERE id = %s', (blog_id,))
+        post = db.fetchone()
+
+        db.execute('SELECT * FROM user WHERE username = %s', (username,))
+        user = db.fetchone()
+
+        if not user or not post:
+            return jsonify({'message': 'User or blog not found'}), 404
+
+        # Add the blog to the readingList table
+        db.execute('INSERT INTO readingList (user_id, blog_id) VALUES (%s, %s)', (user.get('id'), blog_id))
+        conn.commit()
+
+        return jsonify({'message': 'Blog added to reading list successfully'}), 201
+    except Exception as e:
+        return jsonify({'message': f'Error adding to reading list: {str(e)}'}), 500
+
+
+@app.route('/reading_list', methods=['GET'])
+@token_required
+def get_reading_list(username):
+    try:
+
+        db.execute('SELECT * FROM user WHERE username = %s', (username,))
+        user = db.fetchone()
+
+        # Check if the user exists before fetching the reading list
+        if not user:
+            return jsonify({'message': 'User not found'}), 404
+
+        # Fetch the saved blogs from the readingList table for the user
+        db.execute('SELECT blog.* FROM readingList JOIN blog ON readingList.blog_id = blog.id WHERE readingList.user_id = %s', (user.get('id'),))
+        conn.commit()
+        saved_blogs = db.fetchall()
+
+        post_list = posts_response(saved_blogs)
+
+        return jsonify({'saved_blogs': post_list}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching reading list: {str(e)}'}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True)
