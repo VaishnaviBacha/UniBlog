@@ -4,6 +4,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from datetime import datetime, timedelta
 from functools import wraps
 from flask_cors import CORS
+from urllib.parse import unquote
 import pymysql
 import re
 import random
@@ -415,7 +416,8 @@ def get_posts(username):
 @app.route('/get_posts_by_department/<department_name>', methods=['GET'])
 @token_required
 def get_posts_by_department(username, department_name):
-    db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ', department_name.strip())
+    decoded_department_name = unquote(department_name)
+    db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ', decoded_department_name.strip())
     conn.commit()
     posts = db.fetchall()
 
@@ -426,9 +428,11 @@ def get_posts_by_department(username, department_name):
 @app.route('/get_posts_by_course/<department_name>/<course_name>', methods=['GET'])
 @token_required
 def get_posts_by_course(username, department_name, course_name):
+    decoded_department_name = unquote(department_name)
+    decoded_course_name = unquote(course_name)
     db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s)'
                ' AND course_id IN (SELECT id FROM course WHERE course_name like %s) ORDER BY created_at desc ',
-               (department_name.strip(), course_name.strip()))
+               (decoded_department_name.strip(), decoded_course_name.strip()))
     conn.commit()
     posts = db.fetchall()
 
@@ -613,7 +617,9 @@ def get_departments(username):
 def get_search_by_title(username, search_query):
 
     if search_query:
-        title = search_query.strip()
+        decoded_search_query = unquote(search_query)
+        title = decoded_search_query.strip()
+        title = title.strip()
         args = ['%' + title + '%']
         db.execute('SELECT * FROM blog WHERE title like %s', args)
         conn.commit()
