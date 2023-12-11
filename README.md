@@ -34,7 +34,7 @@ __Response__
 2. Invalid email address.(including non college email id)
 3. username contains special characters
 
-### 2. `GET /verify_email`
+### 2. `POST /verify_email`
 
 - Get the OTP from the email and use it here along with the emailID you entered to register
 

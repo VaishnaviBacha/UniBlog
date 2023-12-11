@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask_cors import CORS
 from urllib.parse import unquote
+from datetime import datetime, timezone
 import pymysql
 import re
 import random
@@ -47,6 +48,7 @@ conn = pymysql.connect(
     db='uniblog',
     cursorclass=pymysql.cursors.DictCursor
 )
+# database handle to send request to database
 db = conn.cursor()
 
 # Maintain a set of invalidated tokens (blacklist)
@@ -77,6 +79,20 @@ def token_required(func):
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])  # decoding payload from token
             current_user = payload['username']
+            # Check token expiration
+            current_time = datetime.utcnow().timestamp()
+            expiration = payload['expiration']
+            date_format = "%Y-%m-%d %H:%M:%S.%f"
+            local_datetime = datetime.strptime(expiration, date_format)
+            # Convert the local datetime object to UTC
+            utc_datetime = local_datetime.replace(tzinfo=timezone.utc).timestamp()
+
+#            if expiration and utc_datetime < current_time:
+#                return make_response(jsonify({'Alert!': 'Token has expired', 'statusCode': 401}), 401)
+
+        # except jwt.ExpiredSignatureError:
+        #     return make_response(jsonify({'Alert!': 'Token has expired', 'statusCode': 401}), 401)
+
         except:
             return make_response(jsonify({'Alert!': 'Token is invalid', 'statusCode': 401}), 401)
         return func(current_user, *args, **kwargs)
@@ -138,6 +154,7 @@ def get_profile_picture(username):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # Extract the request parameters
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -145,10 +162,13 @@ def register():
     firstname = data.get('firstname')
     lastname = data.get('lastname')
 
+    # Validating request parameters
     if request.method == 'POST' and username and password and email and firstname and lastname:
         print('reached')
 
-        db.execute('SELECT * FROM user WHERE username = %s OR email = %s', (username, email))
+        # Validating whether the username or email already exists
+        db.execute('SELECT * FROM user WHERE username = %s OR email = %s',
+                   (username, email))
         user = db.fetchone()
         print(user)
         conn.commit()
@@ -156,9 +176,10 @@ def register():
         # domain = re.search('@*?\.', email)
 
         if user:
-            return abort(400, {'message': 'User already exist !'})
+            # return abort(400, {'message': 'User already exist !'})
+            return jsonify({'message': 'User already exist !'}), 400
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            return abort(400, {'message': 'Invalid email address !'})
+            return jsonify({'message': 'Invalid email address !'}), 400
         elif not re.match(r'^[A-Za-z0-9]+$', username):
             return abort(400, {'message': 'name must contain only characters and numbers !'})
         #        elif not domain.group() == "@csu.fullerton.edu":
@@ -179,8 +200,8 @@ def register():
         return abort(400, {'message': 'Please fill out the form !'})
 
 
-@app.route('/verify_email', methods=['GET', 'POST'])
-def verify_email():
+@app.route('/verify_email', methods=['POST'])
+def verify_email(email, token):
     data = request.get_json()
 
     email = data.get('email')
@@ -243,7 +264,7 @@ def upload_profile_picture(username):
 @app.route('/login', methods=['POST'])
 def login():
     msg = ''
-    data = request.get_json()
+    data = request.get_json()  # {"username": VaishnaviTest, "password": "abcd"}
 
     username = data.get('username')
     password = data.get('password')
@@ -271,7 +292,8 @@ def login():
                 "msg": msg
             }
             response = make_response(jsonify(user_info), 200)
-            response.set_cookie('jwt', token, samesite='None', secure=True)  # This solved Cookie samesite error on frontend
+            response.set_cookie('jwt', token, samesite='None',
+                                secure=True)  # This solved Cookie samesite error on frontend
             return response
         else:
             msg = 'Incorrect username / password !'
@@ -282,11 +304,18 @@ def login():
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    token = request.headers.get('Authorization').split()[1]  # Extract the token from the Authorization header
+    token = request.headers.get('Authorization')  # Extract the token from the Authorization header
+    if token:
+        token = token.split()[1]
+    if not token:
+        token = request.headers.get('Cookie')
+        token = str.replace(token.split(";")[0], "jwt=", "")  # Extracting token
     if token:
         # Add the token to the blacklist
         invalid_tokens.add(token)
-        return jsonify({'message': 'Logout successful'}), 200
+        response = make_response(jsonify({'message': 'Logout successful'}), 200)
+        response.set_cookie('jwt', '', samesite='None', secure=True)
+        return response
     else:
         return jsonify({'message': 'Invalid token'}), 401
 
@@ -417,7 +446,9 @@ def get_posts(username):
 @token_required
 def get_posts_by_department(username, department_name):
     decoded_department_name = unquote(department_name)
-    db.execute('SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ', decoded_department_name.strip())
+    db.execute(
+        'SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ',
+        decoded_department_name.strip())
     conn.commit()
     posts = db.fetchall()
 
@@ -615,7 +646,6 @@ def get_departments(username):
 @app.route('/search/<search_query>', methods=['GET'])
 @token_required
 def get_search_by_title(username, search_query):
-
     if search_query:
         decoded_search_query = unquote(search_query)
         title = decoded_search_query.strip()
@@ -748,7 +778,9 @@ def get_reading_list(username):
             return jsonify({'message': 'User not found'}), 404
 
         # Fetch the saved blogs from the readingList table for the user
-        db.execute('SELECT blog.* FROM readingList JOIN blog ON readingList.blog_id = blog.id WHERE readingList.user_id = %s', (user.get('id'),))
+        db.execute(
+            'SELECT blog.* FROM readingList JOIN blog ON readingList.blog_id = blog.id WHERE readingList.user_id = %s',
+            (user.get('id'),))
         conn.commit()
         saved_blogs = db.fetchall()
 
