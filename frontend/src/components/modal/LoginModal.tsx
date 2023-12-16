@@ -20,7 +20,7 @@ const LoginModal = () => {
 
   const navigate = useNavigate()
   const schema: ZodType<FormData> = z.object({
-    username:  z.string().min(2).max(30),
+    username: z.string().min(2).max(30),
     password: z.string().min(6).max(40),
   });
 
@@ -49,13 +49,19 @@ const LoginModal = () => {
   const onSubmit = async (user: FormData) => {
     try {
       const loginResponse = await login(user).unwrap();
-      console.log("login response",loginResponse)
+      console.log("login response", loginResponse);
       dispatch(setCredentials({ ...loginResponse }));
-   toast.success(" login sucessfully")
-   navigate("/")
+      toast.success(" login sucessfully");
       dispatch(closeLoginModal());
+      window.location.reload();
+      //console.log('navigating to /');
     } catch (error) {
-      console.log(error);
+      console.log(error); 
+      if(error?.data?.message === "Please verify email first!"){
+        toast.error("Please verify email first!");
+      } else {
+        toast.error("Invalid username or password");
+      }
     }
   };
   const bodyContent = (

@@ -59,6 +59,11 @@ interface QueryTypes {
   };
 }
 
+interface EmailRequest {
+  email : string,
+  token : string,
+}
+
 const useApiSlice= apiSlice.injectEndpoints({
     endpoints: (builder) => ({
       register: builder.mutation<RegistrationResponse, FormData>({ 
@@ -69,12 +74,12 @@ const useApiSlice= apiSlice.injectEndpoints({
         }),
        
       }),
-      verifyEmail: builder.mutation<EmailVerificationResponse, void>({
+      verifyEmail: builder.mutation<EmailVerificationResponse,EmailRequest>({
         query: (data) => ({
-          url: `/verify_email`,
+          url: '/verify_email',
           method: 'POST',
           body: data,
-          credentials: "include"
+         
         })
       }),
       login: builder.mutation<LoginResponse,FormData>({

@@ -72,12 +72,12 @@ const RegisterModal = () => {
         email: user.email || '', // Assuming default value if email is undefined
       };
 
-      dispatch(setCredentials(userInfo));
+      // dispatch(setCredentials(userInfo));
 
       dispatch(closeRegisterModal())
 
       setTimeout(() => {
-        toast.success("registered succesfuly login to continue", {
+        toast.success("registered succesfuly. Verify OTP to LOGIN", {
           duration: 3000,
         });
       }, 6000)

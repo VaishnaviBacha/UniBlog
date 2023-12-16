@@ -5,7 +5,6 @@ type UserInfo = {
   email: string;
   is_admin: number;
  
- 
   user_id: number;
 };
 

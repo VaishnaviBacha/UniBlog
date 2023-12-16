@@ -89,6 +89,7 @@ interface BlogRequest {
 
    export interface Comment {
     text: string;
+    username: string;
     // You might have additional properties for comments; add them here
   }
   

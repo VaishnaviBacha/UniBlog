@@ -8,6 +8,8 @@ import { useLikePostMutation, useCommentMutation } from '@/slices/blogApiSlice';
 import { useState } from 'react';
 import Loader from './Loader';
 import { FaThumbsUp, FaComment, FaSave } from 'react-icons/fa'; // Import like and comment icons
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SingleBlog = () => {
     const { postId } = useParams<{ postId?: string }>()
@@ -20,6 +22,7 @@ const SingleBlog = () => {
     const [saveBlog, { isLoading: isSaving }] = useSaveBlogMutation()
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(blogByIdData?.post?.likes.length || 0);
+    const navigate = useNavigate()
 
     const [commentText, setCommentText] = useState('');
     const [showCommentForm, setShowCommentForm] = useState(false); // State to control modal/form visibility
@@ -35,7 +38,7 @@ const SingleBlog = () => {
         try {
             const likeResponse = await likePost(postIdString); // Call the likePost mutation
             setLiked(true); // Update the state to indicate the post is liked
-
+            window.location.reload();
         } catch (error) {
             console.error('Error occurred while liking post:', error);
         }
@@ -43,9 +46,7 @@ const SingleBlog = () => {
     const handleSaveClick = async () => {
         try {
             const saveResponse = await saveBlog(postIdString); // Call the likePost mutation
-
-
-
+            toast.success("Saved blog successfully");
         } catch (error) {
             console.error('Error occurred while saving post:', error);
         }
@@ -56,6 +57,7 @@ const SingleBlog = () => {
 
             setCommentText(''); // Reset comment text after submission
             setShowCommentForm(false); // Close the comment form after submission
+            window.location.reload();
             // You might want to refresh the blog post data after adding the comment
         } catch (error) {
             console.error('Error occurred while submitting comment:', error);
@@ -66,14 +68,18 @@ const SingleBlog = () => {
             <div className="max-w-2xl mx-auto p-6 bg-white rounded-md shadow-md">
                 <h2 className="text-3xl font-bold mb-4">{blogByIdData?.post?.title}</h2>
                 <p className="text-gray-700 mb-8">{blogByIdData?.post?.content}</p>
-
+                
+                <span className='font-bold'>Department:</span> {blogByIdData?.post?.department?.department_name}
+                <br></br>
+                <span className='font-bold'>Course:</span> {blogByIdData?.post?.course?.course_name}
+                <br></br>
                 <div className="flex flex-col  ">
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={handleLikeClick}
-                            className="flex items-center text-gray-600"
+                            className="flex items-center text-gray-600 hover:text-blue-500"
                         >
-                            <FaThumbsUp className="w-5 h-5 mr-1 text-gray-500" />
+                            <FaThumbsUp className="w-5 h-5 mr-1" />
 
                             {blogByIdData?.post?.likes.length} Like
                         </button>
@@ -81,7 +87,7 @@ const SingleBlog = () => {
                             onClick={() => setShowCommentForm(true)}
                             className="flex items-center text-gray-600 hover:text-blue-500">
                             <FaComment className="w-5 h-5 mr-1" />
-                            {blogByIdData?.post?.comments.length}Comment
+                            {blogByIdData?.post?.comments.length} Comment
                         </button>
                         <button
                             onClick={handleSaveClick}
@@ -98,14 +104,15 @@ const SingleBlog = () => {
                             blogByIdData?.post?.comments.map((comment, index) => (
                                 <p
                                     key={index}
-                                    className={`justify-start my-2 bg-blue-200`}
+                                    className="my-2 p-4 bg-blue-200 rounded-lg max-w-100%"
                                     style={{
-                                        width: `${Math.max(comment.text.length * 8, 100)}px`,
-                                        maxWidth: '80%',
+                                        width: `${Math.max(comment.text.length * 15, 100)}px`,
+                                        maxWidth: '100%',
                                         padding: '8px',
                                         borderRadius: '8px',
                                     }}
                                 >
+                                    <span className="font-bold">{comment.username}: </span>
                                     {comment.text}
                                 </p>
                             ))

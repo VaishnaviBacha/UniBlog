@@ -1,66 +1,22 @@
-// import React, { useState } from 'react';
-// import { useVerifyEmailQuery } from '@/slices/userApiSlice';
-
-// interface OTPVerificationProps {
-//   email: string;
-//   token: string;
-// }
-
-// const OTPVerification: React.FC<OTPVerificationProps> = ({ email, token }) => {
-//   const [otp, setOTP] = useState('');
-//   const { data, isLoading, isError, isSuccess, error } = useVerifyEmailQuery({ email, token });
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setOTP(e.target.value);
-//   };
-
-//   const handleVerifyOTP = () => {
-//     // Implement logic to trigger email verification using OTP
-//     console.log('Verifying OTP:', otp);
-//     // You might send OTP to a server for validation here
-//   };
-
-//   return (
-//     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
-//       <h2 className="text-2xl font-bold mb-4">OTP Verification</h2>
-//       {isError && <div>Error: </div>}
-//       {isLoading && <div>Loading...</div>}
-//       {isSuccess && <div>{data?.message}</div>}
-//       <div className="mb-4">
-//         <label htmlFor="otp" className="block text-gray-700 font-bold mb-2">
-//           Enter OTP
-//         </label>
-//         <input
-//           type="text"
-//           id="otp"
-//           value={otp}
-//           onChange={handleInputChange}
-//           className="w-full border rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
-//         />
-//       </div>
-//       <button
-//         onClick={handleVerifyOTP}
-//         className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-//       >
-//         Verify OTP
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default OTPVerification;
-
-
-
 import { useVerifyEmailMutation } from "@/slices/userApiSlice";
-import { useAppSelector } from "@/hooks/useAppHooks";
+import { useAppSelector, useAppDispatch } from "@/hooks/useAppHooks";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { openLoginModal } from "@/slices/loginModal";
+
 import toast from "react-hot-toast";
 const OTPVerification = () => {
   const userInfo = useAppSelector((state) => state.auth.userInfo);
   const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailVerify, { isLoading }] = useVerifyEmailMutation();
+  const navigate = useNavigate()
+  const dispatch= useAppDispatch()
 
-  const { data, error, isLoading } = useVerifyEmailMutation(FormData);
+  // const { data, error, isLoading } = useVerifyEmailMutation({
+  //   email: userInfo?.email || '', // Get email from your Redux store
+  //   token: token, // Use the token from your input field
+  // });
 
   // Handle loading, error, and data states here
 
@@ -68,8 +24,39 @@ const OTPVerification = () => {
     setToken(e.target.value);
   };
 
-  const handleVerification = () => {
-    toast.success("email");
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleVerification = async () => {
+    try {
+      const requestData = {
+        email: email,
+        token: token // Token is used as a string
+      };
+      const response = await emailVerify(requestData);
+      console.log(response);
+      // Assuming the response contains a success message
+      // setTimeout(() => {
+      //   toast.success("Email verified succesfully", {
+      //     duration: 3000,
+      //   });
+      // }, 6000)
+      if (response.data?.status === 200) {
+        toast.success("Email verified succesfully"); // Change 'response.data' to the actual response property containing the success message
+        setTimeout(() => {
+          navigate("/")
+          //dispatch(openLoginModal())
+        }, 2000);
+      } else if (response?.error?.status === 400){
+        toast.error("Email verification failed!! Please check the credentials!!");
+      }
+    } catch (error) {
+      // Handle error
+      console.error("Error occurred:", error);
+      toast.error("An error occurred");
+    }
+
   };
 
   return (
@@ -79,6 +66,12 @@ const OTPVerification = () => {
     //   {/* Display loading, error, and data states */}
     // </div>
     <div className="max-w-md mx-auto p-4 border rounded-md shadow-md">
+      <input
+        className="w-full p-2 mb-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+        type="text"
+        value={email}
+        onChange={handleEmailChange}
+        placeholder="Enter Email" />
       <input
         className="w-full p-2 mb-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
         type="text"

@@ -112,7 +112,11 @@ const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         department_id: '',
       });
     } catch (error) {
-      toast.error('Something went wrong');
+      if(error.data?.message === "Course name already exists!") {
+        toast.error("Course name already exists!")
+      } else {
+        toast.error("something went wrong")
+      }
     }
   };
 
@@ -125,6 +129,7 @@ const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         value={courseData.course_name}
         onChange={handleChange}
         className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-500"
+        required
       />
       <input
         type="text"
@@ -133,12 +138,14 @@ const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         value={courseData.description}
         onChange={handleChange}
         className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-500"
+        required
       />
       <select
         name="department_id"
         value={courseData.department_id}
         onChange={handleChange}
         className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-500"
+        required
       >
         <option value="">Select Department</option>
         {departmentsData?.departments.map((department) => (

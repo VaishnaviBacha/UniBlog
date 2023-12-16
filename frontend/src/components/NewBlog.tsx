@@ -18,7 +18,7 @@ const NewBlog: React.FC = () => {
     course_id: 1, // Added course_id
   });
   const { data: departmentsData, isLoading: isDepartmentLoading, isError: isDepartmentError, error, refetch } = useGetDepartmentsQuery();
-  const [createNewBlog, {isError,isLoading}] = useCreateBlogMutation()
+  const [createNewBlog, { isError, isLoading }] = useCreateBlogMutation()
   const navigate = useNavigate()
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -27,7 +27,18 @@ const NewBlog: React.FC = () => {
     setBlogData({ ...blogData, [name]: value });
   };
 
-  
+  const reactQuillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ script: "sub" }, { script: "super" }],
+      ["blockquote", "code-block"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      ["link", "image"],
+    ],
+  };
+
   const handleEditorChange = (content: string) => {
     setBlogData({ ...blogData, content });
   };
@@ -40,7 +51,7 @@ const NewBlog: React.FC = () => {
     const selectedDepartment = departmentsData?.departments.find(
       (department) => department.department_id === category
     );
-  
+
     setBlogData({
       ...blogData,
       category,
@@ -50,7 +61,7 @@ const NewBlog: React.FC = () => {
         : 1,
     });
   };
-  
+
   const handleCourseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const course = parseInt(e.target.value);
     setBlogData({
@@ -59,13 +70,13 @@ const NewBlog: React.FC = () => {
       course_id: isNaN(course) ? 1 : course, // Update course_id
     });
   };
-  
+
   const stripHtmlTags = (html: string) => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || '';
   };
-  
-  
+
+
   const handleBlogCreation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
@@ -79,8 +90,8 @@ const NewBlog: React.FC = () => {
     }
     try {
       const contentPlainText = stripHtmlTags(blogData.content); // Convert HTML to plain text
-    const blogResponse = await createNewBlog({ ...blogData, content: contentPlainText }).unwrap();
-      
+      const blogResponse = await createNewBlog({ ...blogData, content: contentPlainText }).unwrap();
+
       console.log("blogpost", blogData)
 
       setTimeout(() => {
@@ -89,13 +100,13 @@ const NewBlog: React.FC = () => {
           navigate("/my-blogs");
         }, 3000); // Delay of 4 seconds (4000 milliseconds)
       }, 2000);
-      
+
 
     } catch (error) {
       toast.error("Something went wrong");
     }
   };
-  
+
   return (
     <div className="max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">New Blog Post</h2>
@@ -114,7 +125,7 @@ const NewBlog: React.FC = () => {
             className="w-full border rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
           />
         </div>
-     
+
 
         <div className="mb-4">
           <label htmlFor="category" className="block text-gray-700 font-bold mb-2">
@@ -140,7 +151,7 @@ const NewBlog: React.FC = () => {
             )}
           </select>
         </div>
-        
+
         {/* New dropdown for courses */}
         <div className="mb-4">
           <label htmlFor="course" className="block text-gray-700 font-bold mb-2">
@@ -166,22 +177,24 @@ const NewBlog: React.FC = () => {
         </div>
 
         <div className="mb-4">
-        <label htmlFor="content" className="block text-gray-700 font-bold mb-2">
-          Blog Content
-        </label>
-        <ReactQuill
-          theme="snow" // You can change the theme as needed
-          value={blogData.content}
-          onChange={handleEditorChange}
-          className="bg-white"
-          
-        />
-      </div>
+          <label htmlFor="content" className="block text-gray-700 font-bold mb-2">
+            Blog Content
+          </label>
+          <ReactQuill
+            theme="snow" // You can change the theme as needed
+            value={blogData.content}
+            modules={reactQuillModules}
+            onChange={handleEditorChange}
+            className="bg-white"
+            placeholder="Start writing :) ..."
+            preserveWhitespace
+          />
+        </div>
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
         >
-      {isLoading ?  "Creating blog" : "Create blog"}
+          {isLoading ? "Creating blog" : "Create blog"}
         </button>
       </form>
     </div>

@@ -6,6 +6,7 @@ from functools import wraps
 from flask_cors import CORS
 from urllib.parse import unquote
 from datetime import datetime, timezone
+from flask_bcrypt import Bcrypt
 import pymysql
 import re
 import random
@@ -54,6 +55,8 @@ db = conn.cursor()
 # Maintain a set of invalidated tokens (blacklist)
 invalid_tokens = set()
 
+bcrypt = Bcrypt(app)
+
 
 # We are validating JWT token for APIs
 def token_required(func):
@@ -76,6 +79,7 @@ def token_required(func):
         if token in invalid_tokens:
             return jsonify({'message': 'Invalid token'}), 401
 
+        # Decoding the JWT token and extracting user information
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])  # decoding payload from token
             current_user = payload['username']
@@ -87,8 +91,8 @@ def token_required(func):
             # Convert the local datetime object to UTC
             utc_datetime = local_datetime.replace(tzinfo=timezone.utc).timestamp()
 
-#            if expiration and utc_datetime < current_time:
-#                return make_response(jsonify({'Alert!': 'Token has expired', 'statusCode': 401}), 401)
+        #            if expiration and utc_datetime < current_time:
+        #                return make_response(jsonify({'Alert!': 'Token has expired', 'statusCode': 401}), 401)
 
         # except jwt.ExpiredSignatureError:
         #     return make_response(jsonify({'Alert!': 'Token has expired', 'statusCode': 401}), 401)
@@ -173,8 +177,6 @@ def register():
         print(user)
         conn.commit()
 
-        # domain = re.search('@*?\.', email)
-
         if user:
             # return abort(400, {'message': 'User already exist !'})
             return jsonify({'message': 'User already exist !'}), 400
@@ -182,13 +184,19 @@ def register():
             return jsonify({'message': 'Invalid email address !'}), 400
         elif not re.match(r'^[A-Za-z0-9]+$', username):
             return abort(400, {'message': 'name must contain only characters and numbers !'})
-        #        elif not domain.group() == "@csu.fullerton.edu":
-        #            return abort(400, {'message': 'Invalid email address !'})
 
+        domain = re.search('@[\w.]+', email)
+        if not domain.group() == "@csu.fullerton.edu":
+            return abort(400, {'message': 'Invalid email address !'})
+
+        # Hash the password before storing it
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        print(hashed_password)
         verification_token = str(random.randint(100000, 999999))
         db.execute(
-            'INSERT INTO user (username, password, email, firstname, lastname, is_admin, verification_token) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-            (username, password, email, firstname, lastname, False, verification_token))
+            'INSERT INTO user (username, password, email, firstname, lastname, is_admin, verification_token) VALUES ('
+            '%s, %s, %s, %s, %s, %s, %s)',
+            (username, hashed_password, email, firstname, lastname, False, verification_token))
 
         msg = Message('Verify Your Email', recipients=[email])
         msg.body = f'Your OTP is: {verification_token}'
@@ -201,7 +209,7 @@ def register():
 
 
 @app.route('/verify_email', methods=['POST'])
-def verify_email(email, token):
+def verify_email():
     data = request.get_json()
 
     email = data.get('email')
@@ -214,7 +222,7 @@ def verify_email(email, token):
         conn.commit()
 
         if not user:
-            return abort(400, {'message': 'Invalid Verification email or Code'})
+            return jsonify({'message': 'Invalid Verification email or Code'}), 400
 
         if not user['email_verified']:
             db.execute('UPDATE user SET email_verified = %s where username = %s', (True, user['username']))
@@ -223,9 +231,58 @@ def verify_email(email, token):
         else:
             flash('Your email is already verified.', 'info')
 
-        return jsonify({'message': 'Your email is verified.'}), 200
+        return jsonify({'message': 'Your email is verified.', 'status': 200}), 200
     else:
         return jsonify({'message': 'Missing email or token'}), 400
+
+
+# To Login Users with Username and Password
+@app.route('/')
+@app.route('/login', methods=['POST'])
+def login():
+    msg = ''
+    data = request.get_json()  # {"username": VaishnaviTest, "password": "abcd"}
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if request.method == 'POST' and username and password:
+        db.execute('SELECT * FROM user WHERE username = %s', (username,))
+        conn.commit()
+        user = db.fetchone()
+
+        # Checking whether the user verified the email
+        if not user['email_verified']:
+            return jsonify({'message': 'Please verify email first!'}), 400
+
+        # Checking if decrypted password from database and user entered password is same or not.
+        if user and bcrypt.check_password_hash(user['password'], password):
+            session['loggedin'] = True
+            # Here we are creating JWT for Login
+            token = jwt.encode({
+                'username': username,
+                'expiration': str(datetime.utcnow() + timedelta(minutes=30))
+            }, app.config['SECRET_KEY'])
+
+            msg = 'Logged in successfully !'
+
+            user_info = {
+                "username": username,
+                "user_id": user.get('id'),
+                "is_admin": user.get('is_admin'),
+                "email": user.get('email'),
+                "token": token,
+                "msg": msg
+            }
+            response = make_response(jsonify(user_info), 200)
+            response.set_cookie('jwt', token, samesite='None',
+                                secure=True)  # This solved Cookie samesite error on frontend
+            return response
+        else:
+            msg = 'Incorrect username / password !'
+            return make_response({'message': msg}, 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed"'})
+    elif request.method == 'POST':
+        return abort(400, {'message': 'Please fill out the form !'})
 
 
 @app.route('/upload_profile_picture', methods=['POST'])
@@ -257,49 +314,6 @@ def upload_profile_picture(username):
             return jsonify({"message": "Invalid file format", "status": "error"}), 400
     else:
         return jsonify({"message": "No file part in the request", "status": "error"}), 400
-
-
-# To Login Users with Username and Password
-@app.route('/')
-@app.route('/login', methods=['POST'])
-def login():
-    msg = ''
-    data = request.get_json()  # {"username": VaishnaviTest, "password": "abcd"}
-
-    username = data.get('username')
-    password = data.get('password')
-
-    if request.method == 'POST' and username and password:
-        db.execute('SELECT * FROM user WHERE username = %s AND password = %s', (username, password,))
-        conn.commit()
-        user = db.fetchone()
-        if user:
-            session['loggedin'] = True
-            # Here we are creating JWT for Login
-            token = jwt.encode({
-                'username': username,
-                'expiration': str(datetime.utcnow() + timedelta(minutes=30))
-            }, app.config['SECRET_KEY'])
-
-            msg = 'Logged in successfully !'
-
-            user_info = {
-                "username": username,
-                "user_id": user.get('id'),
-                "is_admin": user.get('is_admin'),
-                "email": user.get('email'),
-                "token": token,
-                "msg": msg
-            }
-            response = make_response(jsonify(user_info), 200)
-            response.set_cookie('jwt', token, samesite='None',
-                                secure=True)  # This solved Cookie samesite error on frontend
-            return response
-        else:
-            msg = 'Incorrect username / password !'
-            return make_response({'message': msg}, 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed"'})
-    elif request.method == 'POST':
-        return abort(400, {'message': 'Please fill out the form !'})
 
 
 @app.route('/logout', methods=['POST'])
@@ -397,7 +411,8 @@ def posts_response(posts):
         conn.commit()
         likes = db.fetchall()
 
-        db.execute('SELECT * FROM comment WHERE blog_id = %s', post['id'])
+        db.execute('SELECT c.user_id, c.comment_text, u.username FROM comment c JOIN user u on c.user_id = u.id WHERE '
+                   'blog_id = %s', post['id'])
         conn.commit()
         comments = db.fetchall()
 
@@ -420,7 +435,9 @@ def posts_response(posts):
             'department': {'id': department['id'], 'department_name': department['department_name']},
             'course': {'id': course['id'], 'course_name': course['course_name']},
             'likes': [{'user_id': like['user_id']} for like in likes],
-            'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
+            'comments': [
+                {'user_id': comment['user_id'], 'username': comment['username'], 'text': comment['comment_text']} for
+                comment in comments],
             'created_at': post['created_at'],
             'user_id': post['user_id'],
             'username': user['username']
@@ -447,8 +464,10 @@ def get_posts(username):
 def get_posts_by_department(username, department_name):
     decoded_department_name = unquote(department_name)
     db.execute(
-        'SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY created_at desc ',
+        'SELECT * FROM blog WHERE department_id IN (SELECT id FROM department WHERE department_name like %s) ORDER BY '
+        'created_at desc ',
         decoded_department_name.strip())
+    conn.ping()
     conn.commit()
     posts = db.fetchall()
 
@@ -499,7 +518,8 @@ def single_post_response(post_id):
     conn.commit()
     likes = db.fetchall()
 
-    db.execute('SELECT * FROM comment WHERE blog_id = %s', post['id'])
+    db.execute('SELECT c.user_id, c.comment_text, u.username FROM comment c JOIN user u on c.user_id = u.id WHERE '
+               'blog_id = %s', post['id'])
     conn.commit()
     comments = db.fetchall()
 
@@ -522,7 +542,8 @@ def single_post_response(post_id):
         'department': {'id': department['id'], 'department_name': department['department_name']},
         'course': {'id': course['id'], 'course_name': course['course_name']},
         'likes': [{'user_id': like['user_id']} for like in likes],
-        'comments': [{'user_id': comment['user_id'], 'text': comment['comment_text']} for comment in comments],
+        'comments': [{'user_id': comment['user_id'], 'username': comment['username'], 'text': comment['comment_text']}
+                     for comment in comments],
         'created_at': post['created_at'],
         'user_id': post['user_id'],
         'username': user['username']
@@ -609,7 +630,7 @@ def create_course(username):
     course = db.fetchone()
 
     if course:
-        return jsonify({'message': 'Course name already exist exists!'}), 400
+        return jsonify({'message': 'Course name already exists!'}), 400
 
     db.execute(
         'INSERT INTO course (course_name, description, department_id) VALUES (%s, %s, %s)',
@@ -755,6 +776,13 @@ def add_to_reading_list(username, blog_id):
 
         if not user or not post:
             return jsonify({'message': 'User or blog not found'}), 404
+
+        # If already saved ignore the request
+        db.execute('SELECT * FROM readingList WHERE user_id=%s and blog_id=%s', (user.get('id'), blog_id))
+        save = db.fetchone()
+
+        if save:
+            return jsonify({'message': 'Blog already saved'}), 200
 
         # Add the blog to the readingList table
         db.execute('INSERT INTO readingList (user_id, blog_id) VALUES (%s, %s)', (user.get('id'), blog_id))

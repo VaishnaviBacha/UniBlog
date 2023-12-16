@@ -41,14 +41,14 @@ const MyBlogs = () => {
                                 )}
                             </div>
                         </Link>
-                        <Link to={`/edit_post/${blog.id}`} className="ml-auto">
+                        {/* <Link to={`/edit_post/${blog.id}`} className="ml-auto">
                             <button
                                 onClick={() => handleEditClick(blog.id)}
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 <RiPencilLine className="w-6 h-6" />
                             </button>
-                        </Link>
+                        </Link> */}
                     </div>
                 ))
             )}
